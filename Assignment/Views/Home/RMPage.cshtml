@@ -1,0 +1,113 @@
+﻿@model ComponentWithRMViewModel
+
+<div class="container">
+    <h2>Resource Management for @Model.ComponentCode</h2>
+
+    <!-- Display the selected component details -->
+    <div class="form-group mb-2">
+        <label class="mb-2">Component Code:</label>
+        <input type="text" class="form-control" value="@Model.ComponentCode" readonly />
+    </div>
+    <div class="form-group mb-2">
+        <label class="mb-2">Component Description:</label>
+        <input type="text" class="form-control" value="@Model.ComponentDescription" readonly />
+    </div>
+
+    <!-- Input fields for RM details -->
+    <div class="form-group mb-2">
+        <label for="rmName" class="mb-2">RM Name:</label>
+        <input type="text" id="rmName" class="form-control" placeholder="Enter RM Name" />
+    </div>
+    <div class="form-group mb-2">
+        <label for="rmRate" class="mb-2">RM Rate:</label>
+        <input type="number" id="rmRate" class="form-control" placeholder="Enter RM Rate" />
+    </div>
+
+    <!-- Button to add RM details to the grid -->
+    <button id="addRmBtn" class="btn btn-primary">Add RM</button>
+
+    <!-- Grid to display RM details -->
+    <table id="rmGrid" class="table mt-4">
+        <thead>
+            <tr>
+                <th>RM Name</th>
+                <th>RM Rate</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Dynamically populated rows go here -->
+        </tbody>
+    </table>
+
+    <!-- Submit button to save RM data -->
+    <button id="submitBtn" class="btn btn-success">Submit</button>
+</div>
+
+ <script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Add RM details to grid
+        $('#addRmBtn').click(function () {
+            var rmName = $('#rmName').val();
+            var rmRate = $('#rmRate').val();
+
+            if (rmName && rmRate) {
+                var newRow = `
+                        <tr>
+                            <td>${rmName}</td>
+                            <td>${rmRate}</td>
+                        </tr>
+                    `;
+
+                $('#rmGrid tbody').append(newRow);
+
+                // Clear the inputs
+                $('#rmName').val('');
+                $('#rmRate').val('');
+            } else {
+                alert("Please enter both RM Name and RM Rate.");
+            }
+        });
+
+        // Submit RM data
+        $('#submitBtn').click(function () {
+            var componentCode = '@Model.ComponentCode';
+            var componentDesc = '@Model.ComponentDescription';
+            var rmData = [];
+
+            $('#rmGrid tbody tr').each(function () {
+                var rmName = $(this).find('td:eq(0)').text();
+                var rmRate = $(this).find('td:eq(1)').text();
+
+                rmData.push({ RMName: rmName, RMRate: parseFloat(rmRate) });
+            });
+
+            if (rmData.length === 0) {
+                alert("Please add at least one RM.");
+                return;
+            }
+
+            $.ajax({
+                url: '/Home/SaveRM',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    ComponentCode: componentCode,
+                    ComponentDescription: componentDesc,
+                    RMData: rmData
+                }),
+                success: function (response) {
+                    if (response.success) {
+                        alert('Data saved successfully!');
+                        window.location.href = '/Home/ListPage';
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function () {
+                    alert('An error occurred while saving the data.');
+                }
+            });
+        });
+    });
+</script>

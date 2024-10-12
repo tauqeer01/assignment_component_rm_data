@@ -1,0 +1,74 @@
+﻿@model List<ComponentViewModel>
+
+<div class="container">
+    <h2>Component Selection</h2>
+
+    <!-- Dropdown to select component code -->
+    <div class="form-group mb-2">
+        <label for="componentCode" class="mb-2">Component Code:</label>
+        <select id="componentCode" class="form-control">
+            <option value="">Select Component</option>
+            <option value="COMP001">COMP001</option>
+            <option value="COMP002">COMP002</option>
+            <option value="COMP003">COMP003</option>
+        </select>
+    </div>
+
+    <!-- Input for component description -->
+    <div class="form-group mb-4">
+        <label for="componentDesc" class="mb-2">Component Description:</label>
+        <textarea type="text" id="componentDesc" class="form-control" placeholder="Enter component description"></textarea>
+    </div>
+
+    <!-- Button to add the component -->
+    <button id="addComponentBtn" class="btn btn-primary">Add Component</button>
+
+    <!-- Grid to display the added components -->
+    <table id="componentGrid" class="table mt-4">
+        <thead>
+            <tr>
+                <th>Component Code</th>
+                <th>Component Description</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Dynamically populated rows go here -->
+        </tbody>
+    </table>
+</div>
+
+ <script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Add component to grid when button is clicked
+        $('#addComponentBtn').click(function () {
+            var componentCode = $('#componentCode').val();
+            var componentDesc = $('#componentDesc').val();
+
+            if (componentCode && componentDesc) {
+                var newRow = `
+                        <tr>
+                            <td>${componentCode}</td>
+                            <td>${componentDesc}</td>
+                            <td><button class="btn btn-info addRmBtn">Add RM</button></td>
+                        </tr>
+                    `;
+
+                $('#componentGrid tbody').append(newRow);
+            } else {
+                alert("Please select a component and enter a description.");
+            }
+        });
+
+        // Navigate to RM page with selected component data
+        $(document).on('click', '.addRmBtn', function () {
+            var selectedRow = $(this).closest('tr');
+            var componentCode = selectedRow.find('td:eq(0)').text();
+            var componentDesc = selectedRow.find('td:eq(1)').text();
+
+            // Redirect to RM page with query params
+            window.location.href = `/Home/RMPage?code=${componentCode}&desc=${componentDesc}`;
+        });
+    });
+</script>

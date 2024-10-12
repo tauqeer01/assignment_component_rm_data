@@ -1,0 +1,32 @@
+﻿@model List<RmComponent>
+
+<div class="container">
+    <h2>Saved Components</h2>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Component Code</th>
+                <th>Component Description</th>
+                <th>RM Data</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var component in Model)
+            {
+                <tr>
+                    <td>@component.ComponentCode</td>
+                    <td>@component.ComponentDescription</td>
+                    <td>
+                        <ul>
+                            @foreach (var rm in component.RMData)
+                            {
+                                <li>@rm.RMName - @rm.RMRate</li>
+                            }
+                        </ul>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
